@@ -11,14 +11,16 @@ services:
       - "DB_HOST=mysql"
       - "XDG_CONFIG_HOME=/app"
     ports:
-    - "8080:80"
+    - "80:80"
     links:
       - php-fpm
       - node
+    networks:
+      - my-net
 
   php-fpm:
     build:
-      context: ./docker/php/dev/php-fpm
+      context: ./docker/php/prod/php-fpm
       dockerfile: Dockerfile
     volumes:
       - ./:/var/www
@@ -27,26 +29,11 @@ services:
       - "DB_HOST=mysql"
       - "REDIS_PORT=6379"
       - "REDIS_HOST=redis"
-      - "PHP_IDE_CONFIG=serverName=Docker"
     links:
       - mysql
       - node
-    extra_hosts:
-        - "host.docker.internal:host-gateway"
-
-  php-cli:
-    build:
-      context: ./docker/php/dev/php-cli
-      dockerfile: Dockerfile
-    volumes:
-    - ./:/var/www
-    environment:
-      - "DB_PORT=3306"
-      - "DB_HOST=mysql"
-      - "COMPOSER_MEMORY_LIMIT=-1"
-    links:
-      - mysql
-    tty: true
+    networks:
+      - my-net
 
   mysql:
     image: mysql:8.0
@@ -58,7 +45,9 @@ services:
       - "MYSQL_PASSWORD=12345678"
       - "MYSQL_DATABASE=laravel"
     ports:
-    - "33061:3306"
+      - "8101:3306"
+    networks:
+      - my-net
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -70,7 +59,9 @@ services:
       - UPLOAD_LIMIT=64M
     restart: always
     ports:
-      - 8081:80
+      - 81:80
+    networks:
+      - my-net
 
   node:
     image: node:18-alpine
@@ -80,3 +71,11 @@ services:
     - ./:/var/www
     working_dir: /var/www
     tty: true
+    networks:
+      - my-net
+
+networks:
+  my-net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1400
