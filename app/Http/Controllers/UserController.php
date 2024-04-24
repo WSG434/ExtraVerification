@@ -41,14 +41,13 @@ class UserController extends Controller
 
         $data = [];
 
-        // TODO: Испольльзовать DTO
-
-        if ($request->has('name')){
-            $data['name'] = $request->input('name');
+        if ($request->has('my_attribute')){
+            $data['my_attribute'] = $request->input('my_attribute');
         }
 
-        $user=User::find($id);
+        $user=User::findOrFail($id);
         $user->update($data);
+
         return $user;
     }
 

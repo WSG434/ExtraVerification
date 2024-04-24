@@ -14,39 +14,49 @@ class UpdateInfoTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user=User::find(1);
-        $this->user->update(['name'=>'default value']);
 
+        $this->user=User::firstOrCreate([
+            'name' => 'John Doe',
+            'email' => 'John@Doe.com'
+        ]);
+        $this->user->update(['my_attribute' => 'default value']);
     }
 
     public function test_update_success(): void
     {
+        $this->withoutExceptionHandling();
+
+
         $data = [
-            'name' => 'New value',
+            'my_attribute' => 'new value',
         ];
 
-        $verifyCode = $this->post(route('sendEmailVerification', $this->user->id));
-        $checkCode = $this->post(route('checkEmailVerification'));
+        $CodeByUser = [
+            'code' => 100100
+        ];
 
+        $verifyCode = $this->post(route('sendEmailVerification'), $this->user->toArray());
+        $verifyCode->assertOk();
+
+        $checkCode = $this->post(route('checkEmailVerification'), $CodeByUser);
         $checkCode->assertOk();
 
         $response = $this->patch(route('users.update', $this->user->id), $data);
-
         $response->assertOk();
 
         $response->assertJson([
-            'name' => Arr::get($data,'name'),
+            'my_attribute' => Arr::get($data,'my_attribute'),
         ]);
 
         $this->assertDatabaseHas(User::class, [
             'id' => $this->user->id,
-            'name' => Arr::get($data,'name'),
+            'my_attribute' => Arr::get($data,'my_attribute'),
         ]);
     }
 
-    public function test_update_failed(): void
-    {
-
-    }
+//    public function test_update_failed(): void
+//    {
+//
+//    }
 
 }
