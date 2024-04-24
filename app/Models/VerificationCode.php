@@ -10,4 +10,11 @@ class VerificationCode extends Model
     use HasFactory;
     protected $guarded= [];
     protected $table = 'verification_codes';
+
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

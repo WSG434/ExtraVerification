@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class UpdateInfoTest extends TestCase
@@ -31,12 +32,12 @@ class UpdateInfoTest extends TestCase
             'my_attribute' => 'new value',
         ];
 
-        $CodeByUser = [
-            'code' => 100100
-        ];
-
         $verifyCode = $this->post(route('sendEmailVerification'), $this->user->toArray());
         $verifyCode->assertOk();
+
+        $CodeByUser = [
+            'code' => $this->user->verification_code->where('expires_at','>=', Carbon::now())->sortByDesc('expires_at')->first()->code
+        ];
 
         $checkCode = $this->post(route('checkEmailVerification'), $CodeByUser);
         $checkCode->assertOk();

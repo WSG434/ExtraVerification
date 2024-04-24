@@ -11,7 +11,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-
     protected $guarded= [];
     protected $table = 'users';
 
@@ -27,4 +26,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function verification_code()
+    {
+        return $this->hasMany(VerificationCode::class);
+    }
+
+
 }
