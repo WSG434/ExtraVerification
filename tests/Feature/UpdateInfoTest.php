@@ -48,7 +48,7 @@ class UpdateInfoTest extends TestCase
 
 
 
-        $response = $this->patch(route('users.update', $this->user->id), $formData);
+        $response = $this->patch(route('updateProtectedFields'), $formData);
         $response->assertOk();
 
         $response->assertJson([

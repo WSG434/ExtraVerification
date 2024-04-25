@@ -12,8 +12,19 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+           'extraVerified' => \App\Http\Middleware\IsExtraVerifiedMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function(\App\Exceptions\ExtraVerificationIsExpired $e){
+            return response()->json([
+                'message' => 'ExtraVerification is expired'
+            ], 401);
+        });
+        $exceptions->render(function(\App\Exceptions\NotExtraVerified $e){
+            return response()->json([
+                'message' => 'Not ExtraVerified'
+            ], 401);
+        });
     })->create();

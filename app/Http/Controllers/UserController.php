@@ -38,17 +38,7 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
-        $data = [];
-
-        if ($request->has('my_attribute')){
-            $data['my_attribute'] = $request->input('my_attribute');
-        }
-
-        $user=User::findOrFail($id);
-        $user->update($data);
-
-        return $user;
+        //
     }
 
     /**
