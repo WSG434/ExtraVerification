@@ -28,7 +28,7 @@ class UpdateInfoTest extends TestCase
         $this->withoutExceptionHandling();
 
 
-        $data = [
+        $formData = [
             'my_attribute' => 'new value',
         ];
 
@@ -41,17 +41,23 @@ class UpdateInfoTest extends TestCase
 
         $checkCode = $this->post(route('checkEmailVerification'), $CodeByUser);
         $checkCode->assertOk();
+        $this->assertDatabaseHas(User::class, [
+            'id' => $this->user->id,
+            'extra_verified_expires_at' => Carbon::parse(json_decode($checkCode->getContent()), true)->setTimezone(env('APP_TIMEZONE', 'Europe/Moscow'))
+        ]);
 
-        $response = $this->patch(route('users.update', $this->user->id), $data);
+
+
+        $response = $this->patch(route('users.update', $this->user->id), $formData);
         $response->assertOk();
 
         $response->assertJson([
-            'my_attribute' => Arr::get($data,'my_attribute'),
+            'my_attribute' => Arr::get($formData,'my_attribute'),
         ]);
 
         $this->assertDatabaseHas(User::class, [
             'id' => $this->user->id,
-            'my_attribute' => Arr::get($data,'my_attribute'),
+            'my_attribute' => Arr::get($formData,'my_attribute'),
         ]);
     }
 

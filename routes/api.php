@@ -3,6 +3,7 @@
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
@@ -28,14 +29,12 @@ Route::post('checkEmailVerification', function(Request $request){
     $codeFromDB = $user->verification_code->where('expires_at','>=', Carbon::now())->sortByDesc('expires_at')->first()->code;
     $codeFromUser = $request->code;
     if ((int)$codeFromDB===(int)$codeFromUser){
-        dd($codeFromUser, $codeFromDB);
-        //меняем в БД значение и запускаем тем самым Событие и активируем Слушателей
-        return response(true, 200);
+        $user->update(['extra_verified_expires_at' => Carbon::now()->addMinutes(15)]);
+        return response($user->extra_verified_expires_at, 200);
     }
     return response(false, 401);
 })->name('checkEmailVerification');
 
-
-Route::patch('updateField', function(Request $request){
-   dd("updated");
-})->name('updateField');
+Route::patch('updateProtectedFields', function(Request $request){
+   return "updated";
+})->name('updateProtectedFields');
