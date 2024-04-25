@@ -55,9 +55,11 @@ Route::patch('updateProtectedFields', function(Request $request){
             $data['my_attribute'] = $request->input('my_attribute');
         }
 
-
         $user=User::findOrFail($user->id);
         $user->update($data);
 
         return $user;
 })->middleware('extraVerified')->name('updateProtectedFields');
+
+Route::post('testTelegram', [\App\Http\Controllers\TelegramVerification::class, 'sendMessage']);
+
