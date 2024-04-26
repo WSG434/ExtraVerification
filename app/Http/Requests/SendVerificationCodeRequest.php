@@ -11,8 +11,8 @@ class SendVerificationCodeRequest extends ApiRequest
         return [
             'id' => ['required', 'int'],
             'email' => ['nullable', 'string', 'email'],
-            'number' => ['nullable', 'string|numeric'],
-            'telegramChatId' => ['nullable', 'numeric'],
+            'number' => ['nullable', 'string'],
+            'telegramChatId' => ['nullable', 'int'],
             'verification_type' => ['required', 'string']
         ];
     }

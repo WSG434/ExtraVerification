@@ -1,0 +1,130 @@
+{
+	"info": {
+		"_postman_id": "cb048452-58b0-4e9c-87e7-a8545262db85",
+		"name": "TelegramVerification",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "33361523"
+	},
+	"item": [
+		{
+			"name": "Выслать код Email",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\" : \"1\",\n    \"email\" : \"Joe@Doe.com\",\n    \"verification_type\" : \"Email\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{host}}/api/sendVerificationCode"
+			},
+			"response": []
+		},
+		{
+			"name": "Выслать код SMS",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\" : \"1\",\n    \"email\" : \"Joe@Doe.com\",\n    \"verification_type\" : \"SMS\",\n    \"number\" : \"5431301151\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{host}}/api/sendVerificationCode"
+			},
+			"response": []
+		},
+		{
+			"name": "Выслать код Telegram",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\" : \"1\",\n    \"email\" : \"Joe@Doe.com\",\n    \"verification_type\" : \"Telegram\",\n    \"telegramChatId\" : \"5431301151\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{host}}/api/sendVerificationCode"
+			},
+			"response": []
+		},
+		{
+			"name": "Проверить код",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"code\" : \"972787\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{host}}/api/checkVerificationCode"
+			},
+			"response": []
+		},
+		{
+			"name": "Изменить поля",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"my_attribute\" : \"new_value12345\"\n}"
+				},
+				"url": "{{host}}/api/updateProtectedFields"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://127.0.0.1:8080",
+			"type": "string"
+		}
+	]
+}
