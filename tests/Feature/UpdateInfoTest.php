@@ -11,7 +11,6 @@ use Tests\TestCase;
 
 class UpdateInfoTest extends TestCase
 {
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -22,7 +21,6 @@ class UpdateInfoTest extends TestCase
         ]);
         $this->user->update(['my_attribute' => 'default value']);
     }
-
 
     public function test_sendVerificationCode_success(): void
     {
@@ -47,7 +45,7 @@ class UpdateInfoTest extends TestCase
             'code' => $this->user->verification_code->where('expires_at','>=', Carbon::now())->sortByDesc('expires_at')->first()->code
         ];
 
-        $checkCode = $this->post(route('checkEmailVerification'), $CodeByUser);
+        $checkCode = $this->post(route('checkVerificationCode'), $CodeByUser);
         $checkCode->assertOk();
         $this->assertDatabaseHas(User::class, [
             'id' => $this->user->id,
@@ -75,8 +73,5 @@ class UpdateInfoTest extends TestCase
             'my_attribute' => Arr::get($formData,'my_attribute'),
         ]);
     }
-
-
-
 
 }
