@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Services\ExtraVerification\EmailVerification;
+use App\Http\Controllers\Services\ExtraVerification\SmsVerification;
+use App\Http\Controllers\Services\ExtraVerification\TelegramVerification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -12,17 +15,35 @@ Route::get('/user', function (Request $request) {
 
 Route::apiResource('users', \App\Http\Controllers\UserController::class);
 
-Route::post('sendEmailVerification', function(\App\Http\Requests\SendVerificationCodeRequest $user){
-    $user = $user->validated();
+Route::post('sendVerificationCode', function(\App\Http\Requests\SendVerificationCodeRequest $request){
+
+    $request = $request->validated();
 
     $verificationCode = \App\Models\VerificationCode::create([
-        'user_id' => $user['id'],
+        'user_id' => $request['id'],
+        'verification_type_id' => \App\Models\VerificationType::query()->where('name', $request['verification_type'])->value('id'),
         'code' => mt_rand(100000, 999999),
         'expires_at' => Carbon::now()->addMinutes(2)
     ]);
 
+    switch ($request['verification_type']){
+        case 'Email':
+            EmailVerification::sendCode($request['email'], $verificationCode->code);
+            break;
+        case 'SMS':
+            SmsVerification::sendCode($request['number'], $verificationCode->code);
+            break;
+        case 'Telegram':
+            TelegramVerification::sendCode($request['telegramChatId'], $verificationCode->code);
+            break;
+        default:
+            return response()->json([
+                'message' => 'verification type not exist'
+            ], 404);
+    }
+
     return $verificationCode->code;
-})->name('sendEmailVerification');
+})->name('sendVerificationCode');
 
 Route::post('checkEmailVerification', function(\App\Http\Requests\CheckVerificationCodeRequest $verificationCode){
     $user = User::first();
@@ -60,6 +81,4 @@ Route::patch('updateProtectedFields', function(Request $request){
 
         return $user;
 })->middleware('extraVerified')->name('updateProtectedFields');
-
-Route::post('testTelegram', [\App\Http\Controllers\TelegramVerification::class, 'sendMessage']);
 

@@ -23,17 +23,25 @@ class UpdateInfoTest extends TestCase
         $this->user->update(['my_attribute' => 'default value']);
     }
 
-    public function test_update_success(): void
+
+    public function test_sendVerificationCode_success(): void
     {
         $this->withoutExceptionHandling();
 
-
-        $formData = [
-            'my_attribute' => 'new value',
-        ];
-
-        $verifyCode = $this->post(route('sendEmailVerification'), $this->user->toArray());
+        $verifyCode = $this->post(route('sendVerificationCode'),
+            [
+                'id' => $this->user->id,
+                'email' => $this->user->email,
+                'verification_type' => 'Email'
+            ]);
         $verifyCode->assertOk();
+    }
+
+    public function test_checkVerificationCode_success(): void
+    {
+        $this->withoutExceptionHandling();
+
+        $this->post(route('sendVerificationCode'), $this->user->toArray());
 
         $CodeByUser = [
             'code' => $this->user->verification_code->where('expires_at','>=', Carbon::now())->sortByDesc('expires_at')->first()->code
@@ -45,8 +53,15 @@ class UpdateInfoTest extends TestCase
             'id' => $this->user->id,
             'extra_verified_expires_at' => Carbon::parse(json_decode($checkCode->getContent()), true)->setTimezone(env('APP_TIMEZONE', 'Europe/Moscow'))
         ]);
+    }
 
+    public function test_update_success(): void
+    {
+        $this->withoutExceptionHandling();
 
+        $formData = [
+            'my_attribute' => 'new value',
+        ];
 
         $response = $this->patch(route('updateProtectedFields'), $formData);
         $response->assertOk();
@@ -61,9 +76,7 @@ class UpdateInfoTest extends TestCase
         ]);
     }
 
-//    public function test_update_failed(): void
-//    {
-//
-//    }
+
+
 
 }
